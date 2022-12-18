@@ -225,30 +225,25 @@ void diamond() {
 }
 
 int main(int, char *argv[]) {
-    int execCount = 30;
-    float sum = 0;
-    for (int i = 0; i < execCount; i++) {
-        auto start = chrono::high_resolution_clock::now();
-        char *fileBuffer;
-        int bufferSize;
-        char *fileName = argv[1];
-        if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
-            cout << "File read error" << endl;
-            return 1;
-        }
-        // read input file
-        getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
-        // apply filters
-        mirror();
-        glorify();
-        diamond();
-        // write output file
-        writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
-        // execution time
-        auto end = chrono::high_resolution_clock::now();
-        cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-        sum += chrono::duration_cast<chrono::milliseconds>(end - start).count();
+
+    auto start = chrono::high_resolution_clock::now();
+    char *fileBuffer;
+    int bufferSize;
+    char *fileName = argv[1];
+    if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
+        cout << "File read error" << endl;
+        return 1;
     }
-    cout << "Average execution time: " << (sum / execCount) << "ms" << endl;
+    // read input file
+    getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
+    // apply filters
+    mirror();
+    glorify();
+    diamond();
+    // write output file
+    writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
+    // execution time
+    auto end = chrono::high_resolution_clock::now();
+    cout << "Execution time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     return 0;
 }

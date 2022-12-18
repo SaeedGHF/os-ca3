@@ -340,42 +340,36 @@ void diamond() {
 }
 
 int main(int, char *argv[]) {
-    int execCount = 30;
-    float sum = 0;
-    for (int i = 0; i < execCount; i++) {
-        auto start = chrono::high_resolution_clock::now();
-        char *fileBuffer;
-        int bufferSize;
-        char *fileName = argv[1];
-        if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
-            cout << "File read error" << endl;
-            return 1;
-        }
-        // read input file
-        getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
-        // apply filters
-        tmp = img;
-        pthread_t *threads = new pthread_t[10];
-        pthread_create(&threads[0], nullptr, mirror_r, nullptr);
-        pthread_create(&threads[1], nullptr, mirror_g, nullptr);
-        pthread_create(&threads[2], nullptr, mirror_b, nullptr);
-        pthread_create(&threads[3], nullptr, glorify_r, nullptr);
-        pthread_create(&threads[4], nullptr, glorify_g, nullptr);
-        pthread_create(&threads[5], nullptr, glorify_b, nullptr);
-        pthread_create(&threads[6], nullptr, diamond_up_left, nullptr);
-        pthread_create(&threads[7], nullptr, diamond_up_right, nullptr);
-        pthread_create(&threads[8], nullptr, diamond_down_left, nullptr);
-        pthread_create(&threads[9], nullptr, diamond_down_right, nullptr);
-        for (int i = 0; i < 6; i++) {
-            pthread_join(threads[i], nullptr);
-        }
-        // write output file
-        writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
-        // execution time
-        auto end = chrono::high_resolution_clock::now();
-        cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-        sum += chrono::duration_cast<chrono::milliseconds>(end - start).count();
+    auto start = chrono::high_resolution_clock::now();
+    char *fileBuffer;
+    int bufferSize;
+    char *fileName = argv[1];
+    if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
+        cout << "File read error" << endl;
+        return 1;
     }
-    cout << "Average execution time: " << (sum / execCount) << "ms" << endl;
+    // read input file
+    getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
+    // apply filters
+    tmp = img;
+    pthread_t *threads = new pthread_t[10];
+    pthread_create(&threads[0], nullptr, mirror_r, nullptr);
+    pthread_create(&threads[1], nullptr, mirror_g, nullptr);
+    pthread_create(&threads[2], nullptr, mirror_b, nullptr);
+    pthread_create(&threads[3], nullptr, glorify_r, nullptr);
+    pthread_create(&threads[4], nullptr, glorify_g, nullptr);
+    pthread_create(&threads[5], nullptr, glorify_b, nullptr);
+    pthread_create(&threads[6], nullptr, diamond_up_left, nullptr);
+    pthread_create(&threads[7], nullptr, diamond_up_right, nullptr);
+    pthread_create(&threads[8], nullptr, diamond_down_left, nullptr);
+    pthread_create(&threads[9], nullptr, diamond_down_right, nullptr);
+    for (int i = 0; i < 6; i++) {
+        pthread_join(threads[i], nullptr);
+    }
+    // write output file
+    writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
+    // execution time
+    auto end = chrono::high_resolution_clock::now();
+    cout << "Execution Time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     return 0;
 }
