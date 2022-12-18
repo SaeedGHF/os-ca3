@@ -1,18 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
 #pragma pack(1)
-
-typedef struct bitMap {
-    vector <vector<unsigned char >> r;
-    vector <vector<unsigned char >> g;
-    vector <vector<unsigned char >> b;
-} bitMapFile;
-
-bitMapFile img;
 
 typedef int LONG;
 typedef unsigned short WORD;
@@ -39,6 +32,14 @@ typedef struct tagBITMAPINFOHEADER {
     DWORD biClrUsed;
     DWORD biClrImportant;
 } BITMAPINFOHEADER, *PBITMAPINFOHEADER;
+
+typedef struct bitMap {
+    vector <vector<unsigned char >> r;
+    vector <vector<unsigned char >> g;
+    vector <vector<unsigned char >> b;
+} bitMapFile;
+
+bitMapFile img;
 
 int rows;
 int cols;
@@ -141,6 +142,134 @@ void mirror() {
     }
 }
 
+void glorify() {
+    int filter[3][3];
+    filter[0][0] = -2;
+    filter[0][1] = -1;
+    filter[0][2] = 0;
+    filter[1][0] = -1;
+    filter[1][1] = 1;
+    filter[1][2] = 1;
+    filter[2][0] = 0;
+    filter[2][1] = 1;
+    filter[2][2] = 2;
+    bitMapFile tmp = img;
+    int r = 0, g = 0, b = 0; // This holds the convolution results for an index.
+    int x, y; // Used for input matrix index
+    for (int i = 0; i < rows - 2; i++) {
+        for (int j = 0; j < cols - 2; j++) {
+            x = i;
+            y = j;
+            // Kernel rows and columns are k and l respectively
+            for (int k = 0; k < 3; k++) {
+                for (int l = 0; l < 3; l++) {
+                    r += filter[k][l] * tmp.r[x][y];
+                    g += filter[k][l] * tmp.g[x][y];
+                    b += filter[k][l] * tmp.b[x][y];
+                    y++; // Move right.
+                }
+                x++; // Move down.
+                y = j; // Restart column position
+            }
+            img.r[i][j] = r > 255 ? 255 : (r < 0 ? 0 : r);
+            img.g[i][j] = g > 255 ? 255 : (g < 0 ? 0 : g);
+            img.b[i][j] = b > 255 ? 255 : (b < 0 ? 0 : b);
+            r = 0;
+            g = 0;
+            b = 0;
+        }
+    }
+}
+
+void diamond() {
+    img.r[floor(rows / 2)][0] = 255;
+    img.g[floor(rows / 2)][0] = 255;
+    img.b[floor(rows / 2)][0] = 255;
+
+    img.r[0][floor(cols / 2)] = 255;
+    img.g[0][floor(cols / 2)] = 255;
+    img.b[0][floor(cols / 2)] = 255;
+
+    img.r[floor(rows / 2)][cols - 1] = 255;
+    img.g[floor(rows / 2)][cols - 1] = 255;
+    img.b[floor(rows / 2)][cols - 1] = 255;
+
+    img.r[rows - 1][floor(cols / 2)] = 255;
+    img.g[rows - 1][floor(cols / 2)] = 255;
+    img.b[rows - 1][floor(cols / 2)] = 255;
+
+    for (int i = 1; i < floor(rows / 2); i++) {
+        for (int j = 0; j < floor(cols / 2); j++) {
+            if (i == floor(cols / 2) - j) {
+                img.r[i][j] = 255;
+                img.g[i][j] = 255;
+                img.b[i][j] = 255;
+                img.r[i+1][j] = 255;
+                img.g[i+1][j] = 255;
+                img.b[i+1][j] = 255;
+                img.r[i-1][j] = 255;
+                img.g[i-1][j] = 255;
+                img.b[i-1][j] = 255;
+            }
+        }
+    }
+
+    int y;
+    for (int i = floor(rows / 2); i < rows - 1; i++) {
+        for (int j = 0; j < floor(cols / 2); j++) {
+            y = i - floor(rows / 2);
+            if (y == j) {
+                img.r[i][j] = 255;
+                img.g[i][j] = 255;
+                img.b[i][j] = 255;
+                img.r[i-1][j] = 255;
+                img.g[i-1][j] = 255;
+                img.b[i-1][j] = 255;
+                img.r[i+1][j] = 255;
+                img.g[i+1][j] = 255;
+                img.b[i+1][j] = 255;
+            }
+        }
+    }
+
+
+    for (int i = 1; i < floor(rows / 2); i++) {
+        for (int j = floor(cols / 2); j < cols; j++) {
+            y = j - floor(cols / 2);
+            if (y == i) {
+                img.r[i][j] = 255;
+                img.g[i][j] = 255;
+                img.b[i][j] = 255;
+                img.r[i+1][j] = 255;
+                img.g[i+1][j] = 255;
+                img.b[i+1][j] = 255;
+                img.r[i-1][j] = 255;
+                img.g[i-1][j] = 255;
+                img.b[i-1][j] = 255;
+            }
+        }
+    }
+
+    int x;
+    for (int i = floor(rows / 2); i < rows-1; i++) {
+        for (int j = floor(cols / 2); j < cols; j++) {
+            x = i - floor(rows / 2);
+            y = j - floor(cols / 2);
+            if (x == floor(cols / 2) - y) {
+                img.r[i][j] = 255;
+                img.g[i][j] = 255;
+                img.b[i][j] = 255;
+                img.r[i-1][j] = 255;
+                img.g[i-1][j] = 255;
+                img.b[i-1][j] = 255;
+                img.r[i+1][j] = 255;
+                img.g[i+1][j] = 255;
+                img.b[i+1][j] = 255;
+            }
+        }
+    }
+}
+
 int main(int, char *argv[]) {
     char *fileBuffer;
     int bufferSize;
@@ -153,6 +282,8 @@ int main(int, char *argv[]) {
     getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
     // apply filters
     mirror();
+    glorify();
+    diamond();
     // write output file
     writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
     return 0;
