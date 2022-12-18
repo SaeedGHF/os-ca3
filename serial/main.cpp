@@ -181,90 +181,41 @@ void glorify() {
     }
 }
 
+void white(int x, int y) {
+    img.r[x][y] = 255;
+    img.g[x][y] = 255;
+    img.b[x][y] = 255;
+}
+
+void tripleWhite(int x, int y) {
+    white(x, y);
+    white(x - 1, y);
+    white(x + 1, y);
+}
+
 void diamond() {
-    img.r[floor(rows / 2)][0] = 255;
-    img.g[floor(rows / 2)][0] = 255;
-    img.b[floor(rows / 2)][0] = 255;
-
-    img.r[0][floor(cols / 2)] = 255;
-    img.g[0][floor(cols / 2)] = 255;
-    img.b[0][floor(cols / 2)] = 255;
-
-    img.r[floor(rows / 2)][cols - 1] = 255;
-    img.g[floor(rows / 2)][cols - 1] = 255;
-    img.b[floor(rows / 2)][cols - 1] = 255;
-
-    img.r[rows - 1][floor(cols / 2)] = 255;
-    img.g[rows - 1][floor(cols / 2)] = 255;
-    img.b[rows - 1][floor(cols / 2)] = 255;
-
-    for (int i = 1; i < floor(rows / 2); i++) {
-        for (int j = 0; j < floor(cols / 2); j++) {
-            if (i == floor(cols / 2) - j) {
-                img.r[i][j] = 255;
-                img.g[i][j] = 255;
-                img.b[i][j] = 255;
-                img.r[i+1][j] = 255;
-                img.g[i+1][j] = 255;
-                img.b[i+1][j] = 255;
-                img.r[i-1][j] = 255;
-                img.g[i-1][j] = 255;
-                img.b[i-1][j] = 255;
-            }
-        }
-    }
-
-    int y;
-    for (int i = floor(rows / 2); i < rows - 1; i++) {
-        for (int j = 0; j < floor(cols / 2); j++) {
-            y = i - floor(rows / 2);
-            if (y == j) {
-                img.r[i][j] = 255;
-                img.g[i][j] = 255;
-                img.b[i][j] = 255;
-                img.r[i-1][j] = 255;
-                img.g[i-1][j] = 255;
-                img.b[i-1][j] = 255;
-                img.r[i+1][j] = 255;
-                img.g[i+1][j] = 255;
-                img.b[i+1][j] = 255;
-            }
-        }
-    }
-
-
-    for (int i = 1; i < floor(rows / 2); i++) {
-        for (int j = floor(cols / 2); j < cols; j++) {
-            y = j - floor(cols / 2);
-            if (y == i) {
-                img.r[i][j] = 255;
-                img.g[i][j] = 255;
-                img.b[i][j] = 255;
-                img.r[i+1][j] = 255;
-                img.g[i+1][j] = 255;
-                img.b[i+1][j] = 255;
-                img.r[i-1][j] = 255;
-                img.g[i-1][j] = 255;
-                img.b[i-1][j] = 255;
-            }
-        }
-    }
-
-    int x;
-    for (int i = floor(rows / 2); i < rows-1; i++) {
-        for (int j = floor(cols / 2); j < cols; j++) {
-            x = i - floor(rows / 2);
-            y = j - floor(cols / 2);
-            if (x == floor(cols / 2) - y) {
-                img.r[i][j] = 255;
-                img.g[i][j] = 255;
-                img.b[i][j] = 255;
-                img.r[i-1][j] = 255;
-                img.g[i-1][j] = 255;
-                img.b[i-1][j] = 255;
-                img.r[i+1][j] = 255;
-                img.g[i+1][j] = 255;
-                img.b[i+1][j] = 255;
+    for (int i = 1; i < rows - 1; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (i < floor(rows / 2)) {
+                if (j < floor(cols / 2)) {
+                    if (i == floor(cols / 2) - j) {
+                        tripleWhite(i, j);
+                    }
+                } else {
+                    if (j - floor(cols / 2) == i) {
+                        tripleWhite(i, j);
+                    }
+                }
+            } else {
+                if (j < floor(cols / 2)) {
+                    if (i - floor(rows / 2) == j) {
+                        tripleWhite(i, j);
+                    }
+                } else {
+                    if (i - floor(rows / 2) == cols - j) {
+                        tripleWhite(i, j);
+                    }
+                }
             }
         }
     }
