@@ -3,7 +3,6 @@
 #include <vector>
 #include <cmath>
 #include <pthread.h>
-#include <time.h>
 #include <chrono>
 
 using namespace std;
@@ -136,7 +135,7 @@ void writeOutBmp24(char *fileBuffer, const char *nameOfFileToCreate, int bufferS
 
 bitMapFile tmp;
 
-void *mirror_r(void *arg) {
+void *mirror_r(void *) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             img.r[i][j] = tmp.r[i][cols - j];
@@ -145,7 +144,7 @@ void *mirror_r(void *arg) {
     return nullptr;
 }
 
-void *mirror_g(void *arg) {
+void *mirror_g(void *) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             img.g[i][j] = tmp.g[i][cols - j];
@@ -154,7 +153,7 @@ void *mirror_g(void *arg) {
     return nullptr;
 }
 
-void *mirror_b(void *arg) {
+void *mirror_b(void *) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             img.b[i][j] = tmp.b[i][cols - j];
@@ -292,6 +291,7 @@ void *diamond_up_left(void *) {
             }
         }
     }
+    return nullptr;
 }
 
 void *diamond_up_right(void *) {
@@ -302,6 +302,7 @@ void *diamond_up_right(void *) {
             }
         }
     }
+    return nullptr;
 }
 
 void *diamond_down_left(void *) {
@@ -312,6 +313,7 @@ void *diamond_down_left(void *) {
             }
         }
     }
+    return nullptr;
 }
 
 void *diamond_down_right(void *) {
@@ -322,6 +324,7 @@ void *diamond_down_right(void *) {
             }
         }
     }
+    return nullptr;
 }
 
 void diamond() {

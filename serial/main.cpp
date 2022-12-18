@@ -2,7 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <time.h>
 #include <chrono>
 
 using namespace std;
