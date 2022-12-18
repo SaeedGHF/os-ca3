@@ -340,8 +340,9 @@ void diamond() {
 }
 
 int main(int, char *argv[]) {
+    int execCount = 30;
     float sum = 0;
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < execCount; i++) {
         auto start = chrono::high_resolution_clock::now();
         char *fileBuffer;
         int bufferSize;
@@ -375,6 +376,6 @@ int main(int, char *argv[]) {
         cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
         sum += chrono::duration_cast<chrono::milliseconds>(end - start).count();
     }
-    cout << "Average execution time: " << (sum / 50) << "ms" << endl;
+    cout << "Average execution time: " << (sum / execCount) << "ms" << endl;
     return 0;
 }
