@@ -4,6 +4,8 @@
 
 ### 810197635
 
+The following results observed after 30 execution times.
+
 ## Serial execution output:
 
 ```Average execution time: 80 ms```
