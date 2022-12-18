@@ -1,3 +1,5 @@
 .idea
 build/*.out
 cmake-build-debug
+serial/ImageFilters.out
+parallel/ImageFilters.out

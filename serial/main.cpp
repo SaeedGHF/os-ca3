@@ -1,14 +1,18 @@
 #include <iostream>
-#include <unistd.h>
 #include <fstream>
+#include <vector>
 
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::ofstream;
+using namespace std;
 
 #pragma pack(1)
-#pragma once
+
+typedef struct bitMap {
+    vector <vector<unsigned char >> r;
+    vector <vector<unsigned char >> g;
+    vector <vector<unsigned char >> b;
+} bitMapFile;
+
+bitMapFile img;
 
 typedef int LONG;
 typedef unsigned short WORD;
@@ -65,22 +69,28 @@ bool fillAndAllocate(char *&buffer, const char *fileName, int &rows, int &cols, 
     }
 }
 
-void getPixlesFromBMP24(int end, int rows, int cols, char *fileReadBuffer) {
+void getPixelsFromBMP24(int end, int rows, int cols, char *fileReadBuffer) {
     int count = 1;
     int extra = cols % 4;
     for (int i = 0; i < rows; i++) {
         count += extra;
+        img.r.emplace_back(cols, 0);
+        img.g.emplace_back(cols, 0);
+        img.b.emplace_back(cols, 0);
         for (int j = cols - 1; j >= 0; j--)
             for (int k = 0; k < 3; k++) {
                 switch (k) {
                     case 0:
                         // fileReadBuffer[end - count] is the red value
+                        img.r[i][j] = fileReadBuffer[end - count++];
                         break;
                     case 1:
                         // fileReadBuffer[end - count] is the green value
+                        img.g[i][j] = fileReadBuffer[end - count++];
                         break;
                     case 2:
                         // fileReadBuffer[end - count] is the blue value
+                        img.b[i][j] = fileReadBuffer[end - count++];
                         break;
                         // go to the next position in the buffer
                 }
@@ -103,12 +113,15 @@ void writeOutBmp24(char *fileBuffer, const char *nameOfFileToCreate, int bufferS
                 switch (k) {
                     case 0:
                         // write red value in fileBuffer[bufferSize - count]
+                        fileBuffer[bufferSize - count++] = img.r[i][j];
                         break;
                     case 1:
                         // write green value in fileBuffer[bufferSize - count]
+                        fileBuffer[bufferSize - count++] = img.g[i][j];
                         break;
                     case 2:
                         // write blue value in fileBuffer[bufferSize - count]
+                        fileBuffer[bufferSize - count++] = img.b[i][j];
                         break;
                         // go to the next position in the buffer
                 }
@@ -117,7 +130,18 @@ void writeOutBmp24(char *fileBuffer, const char *nameOfFileToCreate, int bufferS
     write.write(fileBuffer, bufferSize);
 }
 
-int main(int argc, char *argv[]) {
+void mirror() {
+    bitMapFile tmp = img;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            img.r[i][j] = tmp.r[i][cols - j];
+            img.g[i][j] = tmp.g[i][cols - j];
+            img.b[i][j] = tmp.b[i][cols - j];
+        }
+    }
+}
+
+int main(int, char *argv[]) {
     char *fileBuffer;
     int bufferSize;
     char *fileName = argv[1];
@@ -125,10 +149,11 @@ int main(int argc, char *argv[]) {
         cout << "File read error" << endl;
         return 1;
     }
-
     // read input file
+    getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
     // apply filters
+    mirror();
     // write output file
-
+    writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
     return 0;
 }
