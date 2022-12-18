@@ -236,6 +236,6 @@ int main(int, char *argv[]) {
     writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
     // execution time
     auto end = chrono::high_resolution_clock::now();
-    cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    cout << "Execution time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     return 0;
 }
