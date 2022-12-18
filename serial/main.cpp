@@ -188,35 +188,27 @@ void white(int x, int y) {
     img.b[x][y] = 255;
 }
 
-void tripleWhite(int x, int y) {
-    white(x, y);
-    if (x - 1 >= 0)
-        white(x - 1, y);
-    if (x + 1 < rows)
-        white(x + 1, y);
-}
-
 void diamond() {
     for (int i = 1; i < rows - 1; i++) {
         for (int j = 0; j < cols; j++) {
             if (i < floor(rows / 2)) {
                 if (j < floor(cols / 2)) {
                     if (i == floor(cols / 2) - j) {
-                        tripleWhite(i, j);
+                        white(i, j);
                     }
                 } else {
                     if (j - floor(cols / 2) == i) {
-                        tripleWhite(i, j);
+                        white(i, j);
                     }
                 }
             } else {
                 if (j < floor(cols / 2)) {
                     if (i - floor(rows / 2) == j) {
-                        tripleWhite(i, j);
+                        white(i, j);
                     }
                 } else {
                     if (i - floor(rows / 2) == cols - j) {
-                        tripleWhite(i, j);
+                        white(i, j);
                     }
                 }
             }
@@ -244,6 +236,6 @@ int main(int, char *argv[]) {
     writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
     // execution time
     auto end = chrono::high_resolution_clock::now();
-    cout << "Execution time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     return 0;
 }

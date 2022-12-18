@@ -162,7 +162,7 @@ void *mirror_b(void *) {
     return nullptr;
 }
 
-void mirror_old() {
+void mirror() {
     tmp = img;
     pthread_t *threads = new pthread_t[3];
     pthread_create(&threads[0], nullptr, mirror_r, nullptr);
@@ -170,17 +170,6 @@ void mirror_old() {
     pthread_create(&threads[2], nullptr, mirror_b, nullptr);
     for (int i = 0; i < 3; i++) {
         pthread_join(threads[i], nullptr);
-    }
-}
-
-void mirror() {
-    tmp = img;
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            img.r[i][j] = tmp.r[i][cols - j];
-            img.g[i][j] = tmp.g[i][cols - j];
-            img.b[i][j] = tmp.b[i][cols - j];
-        }
     }
 }
 
@@ -275,19 +264,11 @@ void white(int x, int y) {
     img.b[x][y] = 255;
 }
 
-void tripleWhite(int x, int y) {
-    white(x, y);
-    if (x - 1 >= 0)
-        white(x - 1, y);
-    if (x + 1 < rows)
-        white(x + 1, y);
-}
-
 void *diamond_up_left(void *) {
     for (int i = 0; i < floor(rows / 2); i++) {
         for (int j = 0; j < floor(cols / 2); j++) {
             if (i == floor(cols / 2) - j) {
-                tripleWhite(i, j);
+                white(i, j);
             }
         }
     }
@@ -298,7 +279,7 @@ void *diamond_up_right(void *) {
     for (int i = 0; i < floor(rows / 2); i++) {
         for (int j = floor(cols / 2); j < cols; j++) {
             if (j - floor(cols / 2) == i) {
-                tripleWhite(i, j);
+                white(i, j);
             }
         }
     }
@@ -309,7 +290,7 @@ void *diamond_down_left(void *) {
     for (int i = floor(rows / 2); i < rows; i++) {
         for (int j = 0; j < floor(cols / 2); j++) {
             if (i - floor(rows / 2) == j) {
-                tripleWhite(i, j);
+                white(i, j);
             }
         }
     }
@@ -320,7 +301,7 @@ void *diamond_down_right(void *) {
     for (int i = floor(rows / 2); i < rows; i++) {
         for (int j = floor(cols / 2); j < cols; j++) {
             if (i - floor(rows / 2) == cols - j) {
-                tripleWhite(i, j);
+                white(i, j);
             }
         }
     }
@@ -351,25 +332,13 @@ int main(int, char *argv[]) {
     // read input file
     getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
     // apply filters
-    tmp = img;
-    pthread_t *threads = new pthread_t[10];
-    pthread_create(&threads[0], nullptr, mirror_r, nullptr);
-    pthread_create(&threads[1], nullptr, mirror_g, nullptr);
-    pthread_create(&threads[2], nullptr, mirror_b, nullptr);
-    pthread_create(&threads[3], nullptr, glorify_r, nullptr);
-    pthread_create(&threads[4], nullptr, glorify_g, nullptr);
-    pthread_create(&threads[5], nullptr, glorify_b, nullptr);
-    pthread_create(&threads[6], nullptr, diamond_up_left, nullptr);
-    pthread_create(&threads[7], nullptr, diamond_up_right, nullptr);
-    pthread_create(&threads[8], nullptr, diamond_down_left, nullptr);
-    pthread_create(&threads[9], nullptr, diamond_down_right, nullptr);
-    for (int i = 0; i < 6; i++) {
-        pthread_join(threads[i], nullptr);
-    }
+    mirror();
+    glorify();
+    diamond();
     // write output file
     writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
     // execution time
     auto end = chrono::high_resolution_clock::now();
-    cout << "Execution Time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     return 0;
 }
