@@ -2,6 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <time.h>
+#include <chrono>
 
 using namespace std;
 
@@ -189,8 +191,10 @@ void white(int x, int y) {
 
 void tripleWhite(int x, int y) {
     white(x, y);
-    white(x - 1, y);
-    white(x + 1, y);
+    if (x - 1 >= 0)
+        white(x - 1, y);
+    if (x + 1 < rows)
+        white(x + 1, y);
 }
 
 void diamond() {
@@ -222,20 +226,29 @@ void diamond() {
 }
 
 int main(int, char *argv[]) {
-    char *fileBuffer;
-    int bufferSize;
-    char *fileName = argv[1];
-    if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
-        cout << "File read error" << endl;
-        return 1;
+    float sum = 0;
+    for (int i = 0; i < 50; i++) {
+        auto start = chrono::high_resolution_clock::now();
+        char *fileBuffer;
+        int bufferSize;
+        char *fileName = argv[1];
+        if (!fillAndAllocate(fileBuffer, fileName, rows, cols, bufferSize)) {
+            cout << "File read error" << endl;
+            return 1;
+        }
+        // read input file
+        getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
+        // apply filters
+        mirror();
+        glorify();
+        diamond();
+        // write output file
+        writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
+        // execution time
+        auto end = chrono::high_resolution_clock::now();
+        cout << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+        sum += chrono::duration_cast<chrono::milliseconds>(end - start).count();
     }
-    // read input file
-    getPixelsFromBMP24(bufferSize, rows, cols, fileBuffer);
-    // apply filters
-    mirror();
-    glorify();
-    diamond();
-    // write output file
-    writeOutBmp24(fileBuffer, "output.bmp", bufferSize);
+    cout << "Average execution time: " << (sum / 50) << "ms" << endl;
     return 0;
 }
